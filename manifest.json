@@ -22,9 +22,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://throne.com/onemoresend*"],
+      "matches": ["https://throne.com/onemoresend*"],
       "js": ["content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ]
 }
