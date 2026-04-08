@@ -427,7 +427,7 @@ function mainLoop() {
     } else {
       clickPayNow();  // Once setup is done, proceed to pay
     }
-  } else if (url.includes("goon4cf")) {
+  } else if (url.includes("onemoresend")) {
     // Reset custom name flag when back on the main page
     customNameSetup = false;
     clickAddToCart();
@@ -451,7 +451,7 @@ function startMainLoop() {
 }
 
 // Debug: log when extension loads
-console.log("🎀 goon4cf auto drainer loaded. Looking for items...");
+console.log("🎀 onemoresend auto drainer loaded. Looking for items...");
 setTimeout(() => {
   const found = scanAllowedItems();
   console.log(`Found ${found.length} items:`, found.map(f => f.item));
