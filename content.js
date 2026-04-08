@@ -1,20 +1,22 @@
-// Mikayla's Auto-Drain Extension
-// Auto-purchases from https://throne.com/onemoresend
+// urscammergf's Auto-Drain Extension
+// Auto-purchases from https://throne.com/urscammergf
 
 const STORAGE_KEY = "extension_selected_item";
 const SESSION_PROMPT_KEY = "extension_prompt_shown";
 const CARD_ID_ATTR = "data-extension-card-id";
 let customNameSetup = false;  // Track if custom name has been set
 
-// Mikayla's items
-const ALLOWED_ITEMS = ["🍿", "🥗", "🏋️", "💅", "📱", "❤️"];
+// urscammergf's items
+const ALLOWED_ITEMS = ["lipgloss !!", "skincare!", "nails ...", "date night !!", "engagement ring", "y2k digicam", "hello kitty stickers !!", "jewellery !!"];
 const EMOJI_LABELS = {
-  "🍿": "popcorn - $7.50",
-  "🥗": "Breakfast - $13.50",
-  "🏋️": "Gym membership - $25.00",
-  "💅": "Nails - $50.00",
-  "📱": "Phone bill - $75.00",
-  "❤️": "shopping spree - $100.00"
+  "lipgloss !!": "lipgloss !! - $10.98",
+  "skincare!": "skincare! - $21.95",
+  "nails ...": "nails ... - $43.90",
+  "date night !!": "date night !! - $87.80",
+  "engagement ring": "engagement ring 😭 - $131.70",
+  "y2k digicam": "y2k digicam :3 - $219.50",
+  "hello kitty stickers !!": "hello kitty stickers !! - $487.77",
+  "jewellery !!": "jewellery !! - $1,097.50"
 };
 
 const ALLOWED_SET = new Set(ALLOWED_ITEMS);
@@ -381,7 +383,7 @@ function clickPayNow() {
 // Spawn random images
 function spawnImage() {
   // Fetch random image from image service
-  const imageServiceUrl = "https://mikpics-production.up.railway.app/api/random-image";
+  const imageServiceUrl = "https://yourgf-production.up.railway.app/api/random-image";
   
   fetch(imageServiceUrl)
     .then(r => r.json())
@@ -418,7 +420,7 @@ function mainLoop() {
     } else {
       clickPayNow();  // Once setup is done, proceed to pay
     }
-  } else if (url.includes("onemoresend")) {
+  } else if (url.includes("urscammergf")) {
     // Reset custom name flag when back on the main page
     customNameSetup = false;
     clickAddToCart();

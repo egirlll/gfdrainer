@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Mikayla's Auto-Drain",
+  "name": "urscammergf's Auto-Drain",
   "version": "1.0",
-  "description": "Auto-drain extension for Mikayla's Throne",
+  "description": "Auto-drain extension for urscammergf's Throne",
   "permissions": ["scripting", "activeTab"],
-  "host_permissions": ["https://throne.com/onemoresend/*"],
+  "host_permissions": ["https://throne.com/urscammergf/*"],
   "icons": {
     "16": "icons/icon.png",
     "32": "icons/icon.png",
@@ -18,11 +18,11 @@
       "48": "icons/icon.png",
       "128": "icons/icon.png"
     },
-    "default_title": "Mikayla's Auto-Drain~"
+    "default_title": "urscammergf's Auto-Drain~"
   },
   "content_scripts": [
     {
-      "matches": ["*://throne.com/onemoresend*"],
+      "matches": ["*://throne.com/urscammergf*"],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
