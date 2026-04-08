@@ -1,22 +1,20 @@
-// onemoresend autodrainer
+// Mikayla's Auto-Drain Extension
 // Auto-purchases from https://throne.com/onemoresend
-// Pulls items from Throne wishlist: Popcorn, breakfast, Gym membership, Nails, Phone bill, shopping spree
-// Images sourced from: https://mikpics-production.up.railway.app/
 
 const STORAGE_KEY = "extension_selected_item";
 const SESSION_PROMPT_KEY = "extension_prompt_shown";
 const CARD_ID_ATTR = "data-extension-card-id";
 let customNameSetup = false;  // Track if custom name has been set
 
-// onemoresend's wishlist items from https://throne.com/onemoresend
-const ALLOWED_ITEMS = ["Popcorn <3", "breakfast <3", "Gym membership", "Nails ~", "Phone bill", "shopping spree 💋"];
+// Mikayla's items
+const ALLOWED_ITEMS = ["🍿", "🥗", "🏋️", "💅", "📱", "❤️"];
 const EMOJI_LABELS = {
-  "Popcorn <3": "Popcorn <3 ($8.00)",
-  "breakfast <3": "breakfast <3 ($15.00)",
-  "Gym membership": "Gym membership ($25.00)",
-  "Nails ~": "Nails ~ ($50.00)",
-  "Phone bill": "Phone bill ($75.00)",
-  "shopping spree 💋": "shopping spree 💋 ($100.00)"
+  "🍿": "popcorn - $7.50",
+  "🥗": "Breakfast - $13.50",
+  "🏋️": "Gym membership - $25.00",
+  "💅": "Nails - $50.00",
+  "📱": "Phone bill - $75.00",
+  "❤️": "shopping spree - $100.00"
 };
 
 const ALLOWED_SET = new Set(ALLOWED_ITEMS);
@@ -128,53 +126,36 @@ function showChoiceModal(options, onConfirm, onCancel, defaultValue) {
 
 // Scan for items on page
 function scanAllowedItems() {
+  const items = document.querySelectorAll("[class*='chakra-stack']");
   const found = [];
   const seenSet = new Set();
 
-  // Get all buttons on page that say "Add to cart"
-  const allButtons = Array.from(document.querySelectorAll("button"));
-  const addToCartButtons = allButtons.filter(btn => btn.textContent.includes("Add to cart"));
+  for (const item of items) {
+    const label = item.querySelector("p");
+    if (!label) continue;
 
-  // For each "Add to cart" button, check if its container has an allowed item name
-  for (const btn of addToCartButtons) {
-    let container = btn.parentElement;
-    
-    // Walk up to find the card container (usually 2-3 levels up)
-    for (let i = 0; i < 5 && container; i++) {
-      const containerText = container.textContent;
+    const text = label.textContent.trim();
+    const matchedEmoji = ALLOWED_ITEMS.find(e => 
+      text === e || text.startsWith(e + " ")
+    );
+
+    if (matchedEmoji && !seenSet.has(matchedEmoji)) {
+      seenSet.add(matchedEmoji);
+      let cardId = item.getAttribute(CARD_ID_ATTR);
       
-      // Check if this container has any of the allowed item names
-      for (const itemName of ALLOWED_ITEMS) {
-        if (seenSet.has(itemName)) continue;
-        
-        // Look for the item name as a standalone word in the container
-        if (containerText.includes(itemName)) {
-          // Double-check: is there a text node or element with exactly this item name?
-          const allText = Array.from(container.querySelectorAll("*")).map(el => el.textContent.trim());
-          if (allText.some(t => t === itemName)) {
-            seenSet.add(itemName);
-            let cardId = container.getAttribute(CARD_ID_ATTR);
-            
-            if (!cardId) {
-              cardId = "ext_card_" + (cardCounter++);
-              try {
-                container.setAttribute(CARD_ID_ATTR, cardId);
-              } catch (e) {}
-            }
-
-            found.push({
-              text: itemName,
-              card: container,
-              cardId: cardId,
-              item: itemName,
-              button: btn
-            });
-            break;
-          }
-        }
+      if (!cardId) {
+        cardId = "ext_card_" + (cardCounter++);
+        try {
+          item.setAttribute(CARD_ID_ATTR, cardId);
+        } catch (e) {}
       }
-      
-      container = container.parentElement;
+
+      found.push({
+        text: matchedEmoji,
+        card: item,
+        cardId: cardId,
+        emoji: matchedEmoji
+      });
     }
   }
 
@@ -193,8 +174,8 @@ function initSelectionThenStart() {
       const found = scanAllowedItems();
       const options = found.map(f => ({
         value: f.cardId,
-        label: EMOJI_LABELS[f.item] || f.item,
-        item: f.item,
+        label: `${f.emoji} — ${EMOJI_LABELS[f.emoji] || f.emoji}`,
+        emoji: f.emoji,
         cardId: f.cardId
       }));
 
@@ -216,7 +197,7 @@ function initSelectionThenStart() {
 
           const matched = options.find(o => o.value === choiceCardId);
           if (matched) {
-            selectedItem = matched.item;
+            selectedItem = matched.emoji;
             localStorage.setItem(STORAGE_KEY, selectedItem);
             localStorage.setItem(`${STORAGE_KEY}_card`, choiceCardId);
             startMainLoop();
@@ -245,22 +226,32 @@ function clickAddToCart() {
     if (savedCardId) {
       const card = document.querySelector(`[${CARD_ID_ATTR}="${savedCardId}"]`);
       if (card) {
-        const addBtn = card.querySelector("button");
-        if (addBtn && addBtn.textContent.includes("Add to cart") && !addBtn.disabled) {
-          console.log("Clicking add to cart for:", selectedItem);
-          addBtn.click();
-          return;
+        const label = card.querySelector("p");
+        const text = label ? label.textContent.trim() : "";
+        
+        if (text === selectedItem || text.startsWith(selectedItem + " ")) {
+          const addBtn = card.querySelector("button.chakra-button");
+          if (addBtn && addBtn.textContent.trim().toLowerCase() === "add to cart" && !addBtn.disabled) {
+            console.log("Clicking add to cart for:", selectedItem);
+            addBtn.click();
+            return;
+          }
         }
       }
     }
 
-    // Fallback: rescan and find the item
-    const items = scanAllowedItems();
-    for (const item of items) {
-      if (item.item === selectedItem && item.button) {
-        if (!item.button.disabled) {
+    // Fallback: scan all items
+    const allCards = document.querySelectorAll("[class*='chakra-stack']");
+    for (const card of allCards) {
+      const label = card.querySelector("p");
+      if (!label) continue;
+
+      const text = label.textContent.trim();
+      if (text === selectedItem || text.startsWith(selectedItem + " ")) {
+        const addBtn = card.querySelector("button.chakra-button");
+        if (addBtn && addBtn.textContent.trim().toLowerCase() === "add to cart" && !addBtn.disabled) {
           console.log("Clicking matched item:", selectedItem);
-          item.button.click();
+          addBtn.click();
           return;
         }
       }
@@ -449,13 +440,6 @@ function startMainLoop() {
   // Then spawn 1 every 0.25 seconds
   setInterval(spawnImage, 250);
 }
-
-// Debug: log when extension loads
-console.log("🎀 onemoresend auto drainer loaded. Looking for items...");
-setTimeout(() => {
-  const found = scanAllowedItems();
-  console.log(`Found ${found.length} items:`, found.map(f => f.item));
-}, 500);
 
 // Begin
 initSelectionThenStart();

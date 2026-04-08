@@ -1,4 +1,4 @@
-# onemoresend auto drainer
+# Mikayla's Auto-Drain Extension
 
 Auto-drain extension for https://throne.com/onemoresend
 
@@ -19,23 +19,22 @@ Auto-drain extension for https://throne.com/onemoresend
    - Select an item when modal appears
    - Extension auto-drains: add to cart → checkout → pay
 
-## Wishlist Items
+## Items
 
-- **Popcorn <3** - $8.00
-- **breakfast <3** - $15.00
-- **Gym membership** - $25.00
-- **Nails ~** - $50.00
-- **Phone bill** - $75.00
-- **shopping spree 💋** - $100.00
+- 🍿 popcorn - $7.50
+- 🥗 Breakfast - $13.50
+- 💪 Gym membership - $25.00
+- 💅 Nails - $50.00
+- 📱 Phone bill - $75.00
+- ❤️ shopping spree - $100.00
 
 ## Features
 
 - Select item once, remembers choice
 - Auto-clicks add to cart
 - Auto-opens checkout
-- Sets custom name as "autodrainer" at payment
 - Auto-submits payment
-- Spawns images from onemoresend image service
+- Spawns images (mikpics-production.up.railway.app)
 - Loops continuously until tab is closed
 
 ## Image Setup
@@ -45,7 +44,10 @@ Images are automatically pulled from:
 https://mikpics-production.up.railway.app/api/random-image
 ```
 
-Images spawn every 0.25 seconds during drain (10 images instantly, then 1 every 250ms).
+To change image source, edit this line in `content.js`:
+```javascript
+const imageServiceUrl = "https://mikpics-production.up.railway.app/api/random-image";
+```
 
 ## Notes
 
